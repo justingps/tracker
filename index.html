@@ -117,6 +117,26 @@
     .table-badge{font-size:0.7rem;font-weight:600;color:var(--accent);background:rgba(224,123,57,0.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(224,123,57,0.2);}
     .table-scroll{overflow-x:auto;max-height:600px;}
     .data-table{width:100%;border-collapse:collapse;}
+    
+    /* Column header styling for responsibilities */
+    .data-table th.eng-column {
+      background: rgba(58, 123, 213, 0.12);
+      border-bottom: 3px solid var(--accent2);
+    }
+    
+    .data-table th.qs-column {
+      background: rgba(46, 170, 126, 0.12);
+      border-bottom: 3px solid var(--accent3);
+    }
+    
+    [data-theme="dark"] .data-table th.eng-column {
+      background: rgba(58, 123, 213, 0.18);
+    }
+    
+    [data-theme="dark"] .data-table th.qs-column {
+      background: rgba(46, 170, 126, 0.18);
+    }
+    
     .data-table th{position:sticky;top:0;z-index:10;padding:12px 16px;font-size:0.7rem;font-weight:600;color:var(--text-sub);text-transform:uppercase;letter-spacing:0.05em;background:var(--surface2);border-bottom:2px solid var(--border-br);text-align:left;}
     .data-table td{padding:10px 14px;font-size:0.85rem;color:var(--text);border-bottom:1px solid var(--border);font-weight:400;}
     .vor-table .col-scope, .vor-table .col-remarks{white-space:normal;word-break:break-word;min-width:180px;max-width:280px;line-height:1.5;}
@@ -125,9 +145,9 @@
     .vor-row-approved{background:rgba(46,170,126,0.06) !important;}
     .vor-row-rejected{background:rgba(217,79,79,0.06) !important;}
     .vor-row-pending{background:rgba(212,146,43,0.06) !important;}
-    [data-theme="dark"] .vor-row-approved{background:rgba(46,170,126,0.1) !important;}
-    [data-theme="dark"] .vor-row-rejected{background:rgba(217,79,79,0.1) !important;}
-    [data-theme="dark"] .vor-row-pending{background:rgba(212,146,43,0.1) !important;}
+    [data-theme="dark"] .vor-row-approved{background:rgba(46,170,126,0.12) !important;}
+    [data-theme="dark"] .vor-row-rejected{background:rgba(217,79,79,0.12) !important;}
+    [data-theme="dark"] .vor-row-pending{background:rgba(212,146,43,0.12) !important;}
     
     /* BADGES */
     .status-pill{display:inline-flex;padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;letter-spacing:0.02em;}
@@ -140,6 +160,49 @@
     .cat-def{background:var(--surface2);color:var(--text-sub);border:1.5px solid var(--border-br);padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:500;}
     .badge-eq{background:rgba(58,123,213,0.12);color:var(--accent2);border:1.5px solid rgba(58,123,213,0.22);}
     
+    /* Responsibility Legend */
+    .responsibility-legend {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 16px;
+      padding: 10px 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .legend-color {
+      width: 24px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    .legend-color.eng {
+      background: rgba(58, 123, 213, 0.3);
+      border-bottom: 3px solid var(--accent2);
+    }
+    
+    .legend-color.qs {
+      background: rgba(46, 170, 126, 0.3);
+      border-bottom: 3px solid var(--accent3);
+    }
+    
+    [data-theme="dark"] .legend-color.eng {
+      background: rgba(58, 123, 213, 0.4);
+    }
+    
+    [data-theme="dark"] .legend-color.qs {
+      background: rgba(46, 170, 126, 0.4);
+    }
+    
     /* ACTIONS */
     .btn-accent{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:600;cursor:pointer;font-family:var(--font-body);font-size:0.85rem;letter-spacing:0.02em;}
     .btn-accent:hover{background:var(--accent-h)}
@@ -148,7 +211,7 @@
     .btn-refresh{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:rgba(58,123,213,0.1);border:1.5px solid rgba(58,123,213,0.3);border-radius:var(--radius-sm);color:var(--accent2);cursor:pointer;font-weight:600;font-size:0.8rem;}
     .btn-refresh:hover{background:rgba(58,123,213,0.18);}
     
-    .cell-actions{display:flex;gap:6px;justify-content:flex-end}
+    .cell-actions{display:flex;gap:6px;justify-content:center}
     .icon-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:1.5px solid transparent;background:transparent;cursor:pointer;color:var(--text-sub);font-size:0.9rem;display:flex;align-items:center;justify-content:center;}
     .icon-btn:hover{color:var(--text);background:var(--surface2);border-color:var(--border-br);}
     .icon-btn.edit-btn:hover{color:var(--accent2);border-color:var(--accent2);background:rgba(58,123,213,0.08);}
@@ -166,26 +229,67 @@
     /* MODAL DIALOG */
     .modal-overlay{position:fixed;inset:0;z-index:1000;background:var(--modal-overlay);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
     .modal-overlay.active{display:flex;}
-    .modal-dialog{background:var(--surface);border:1.5px solid var(--border-br);border-radius:var(--radius-lg);width:90%;max-width:650px;max-height:85vh;overflow:hidden;box-shadow:var(--shadow);animation:modalIn 0.25s ease;}
+    .modal-dialog{background:var(--surface);border:1.5px solid var(--border-br);border-radius:var(--radius-lg);width:90%;max-width:750px;max-height:85vh;overflow:hidden;box-shadow:var(--shadow);animation:modalIn 0.25s ease;}
     @keyframes modalIn{from{transform:scale(0.95);opacity:0}to{transform:scale(1);opacity:1}}
     .modal-header{padding:20px 24px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
     .modal-title{font-size:1.2rem;font-weight:700;letter-spacing:-0.01em;}
     .modal-close{width:32px;height:32px;border-radius:var(--radius-sm);border:1.5px solid transparent;background:transparent;cursor:pointer;color:var(--text-sub);font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
     .modal-close:hover{background:var(--surface2);color:var(--danger);border-color:var(--border-br);}
     .modal-body{padding:24px;overflow-y:auto;max-height:calc(85vh - 140px);}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;}
+    
+    /* Form Sections */
+    .form-section {
+      margin-bottom: 24px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .form-section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-section:first-of-type .form-section-title {
+      color: var(--accent2);
+    }
+    
+    .form-section:last-of-type .form-section-title {
+      color: var(--accent3);
+    }
+    
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     .form-field{display:flex;flex-direction:column;gap:6px;}
     .form-field.full-width{grid-column:span 2;}
     .form-label{font-size:0.75rem;font-weight:600;color:var(--text-sub);text-transform:uppercase;letter-spacing:0.05em;}
     .form-input{width:100%;padding:10px 14px;background:var(--input-bg);border:1.5px solid var(--border-br);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:0.9rem;outline:none;}
     .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,123,57,0.12);}
     textarea.form-input{min-height:80px;resize:vertical;}
+    
     .modal-footer{padding:16px 24px;border-top:1.5px solid var(--border);display:flex;justify-content:flex-end;gap:12px;}
     .btn-modal{padding:10px 24px;border-radius:var(--radius-sm);font-weight:600;font-size:0.85rem;cursor:pointer;font-family:var(--font-body);border:none;}
     .btn-modal-primary{background:var(--accent);color:#fff;}
     .btn-modal-primary:hover{background:var(--accent-h);}
     .btn-modal-secondary{background:transparent;border:1.5px solid var(--border-br);color:var(--text-sub);}
     .btn-modal-secondary:hover{background:var(--surface2);color:var(--text);}
+    
+    @media(max-width:600px){
+      .form-grid{grid-template-columns:1fr;}
+      .form-field.full-width{grid-column:span 1;}
+      .modal-dialog{width:95%;}
+      .content{padding:16px;}
+      .responsibility-legend{flex-direction:column;gap:8px;}
+    }
   </style>
 </head>
 <body>
@@ -252,6 +356,18 @@
     <!-- KPI STRIP -->
     <div id="vor-stats-bar"></div>
 
+    <!-- RESPONSIBILITY LEGEND -->
+    <div class="responsibility-legend">
+      <div class="legend-item">
+        <div class="legend-color eng"></div>
+        <span><i class="fas fa-user-hard-hat" style="color:var(--accent2);margin-right:6px;"></i>Site Engineer Responsibility</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color qs"></div>
+        <span><i class="fas fa-calculator" style="color:var(--accent3);margin-right:6px;"></i>Site QS Responsibility</span>
+      </div>
+    </div>
+
     <!-- MAIN TABLE -->
     <div class="table-wrap">
       <div class="table-header">
@@ -276,67 +392,84 @@
       <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form id="recordForm" class="form-grid">
-        <div class="form-field">
-          <label class="form-label">Date *</label>
-          <input type="date" id="modal-date" class="form-input" required>
+      <form id="recordForm">
+        <!-- Site Engineer Section -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-user-hard-hat" style="color:var(--accent2);"></i> Site Engineer Section
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Date *</label>
+              <input type="date" id="modal-date" class="form-input" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Requestor</label>
+              <input type="text" id="modal-requestor" class="form-input" placeholder="Enter requestor name">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Site *</label>
+              <select id="modal-site" class="form-input" required>
+                <option value="">Select Site</option>
+                <option>Safha</option>
+                <option>Wadi Lathem</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Work Type *</label>
+              <select id="modal-workType" class="form-input" required>
+                <option value="">Select Type</option>
+                <option>VoR</option>
+                <option>Day Work</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">WI No.</label>
+              <input type="text" id="modal-wi" class="form-input" placeholder="Enter WI number">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Discipline</label>
+              <select id="modal-discipline" class="form-input">
+                <option value="">Select Discipline</option>
+                <option>Civil</option><option>Mechanical</option><option>Piping</option><option>Electrical</option>
+                <option>Instrumentation</option><option>Telecom</option><option>Structural</option><option>Process</option>
+                <option>HSE</option><option>QA/QC</option>
+              </select>
+            </div>
+            <div class="form-field full-width">
+              <label class="form-label">Work Scope</label>
+              <textarea id="modal-scope" class="form-input" placeholder="Describe work scope..." rows="2"></textarea>
+            </div>
+          </div>
         </div>
-        <div class="form-field">
-          <label class="form-label">Requestor</label>
-          <input type="text" id="modal-requestor" class="form-input" placeholder="Enter requestor name">
-        </div>
-        <div class="form-field">
-          <label class="form-label">Site *</label>
-          <select id="modal-site" class="form-input" required>
-            <option value="">Select Site</option>
-            <option>Safha</option>
-            <option>Wadi Lathem</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Work Type *</label>
-          <select id="modal-workType" class="form-input" required>
-            <option value="">Select Type</option>
-            <option>VoR</option>
-            <option>Day Work</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">WI No.</label>
-          <input type="text" id="modal-wi" class="form-input" placeholder="Enter WI number">
-        </div>
-        <div class="form-field">
-          <label class="form-label">Discipline</label>
-          <select id="modal-discipline" class="form-input">
-            <option value="">Select Discipline</option>
-            <option>Civil</option><option>Mechanical</option><option>Piping</option><option>Electrical</option>
-            <option>Instrumentation</option><option>Telecom</option><option>Structural</option><option>Process</option>
-            <option>HSE</option><option>QA/QC</option>
-          </select>
-        </div>
-        <div class="form-field full-width">
-          <label class="form-label">Work Scope</label>
-          <textarea id="modal-scope" class="form-input" placeholder="Describe work scope..." rows="2"></textarea>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Submission Date</label>
-          <input type="date" id="modal-qsDate" class="form-input">
-        </div>
-        <div class="form-field">
-          <label class="form-label">Client Approval</label>
-          <select id="modal-approval" class="form-input">
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Approval Date</label>
-          <input type="date" id="modal-approvalDate" class="form-input">
-        </div>
-        <div class="form-field full-width">
-          <label class="form-label">Remarks</label>
-          <textarea id="modal-remarks" class="form-input" placeholder="Additional remarks..." rows="2"></textarea>
+        
+        <!-- Site QS Section -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-calculator" style="color:var(--accent3);"></i> Site QS Section
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Submission Date</label>
+              <input type="date" id="modal-qsDate" class="form-input">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Client Approval</label>
+              <select id="modal-approval" class="form-input">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Approval Date</label>
+              <input type="date" id="modal-approvalDate" class="form-input">
+            </div>
+            <div class="form-field full-width">
+              <label class="form-label">Remarks</label>
+              <textarea id="modal-remarks" class="form-input" placeholder="Additional remarks..." rows="2"></textarea>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -411,17 +544,17 @@
     // ---------- VOR CONFIG ----------
     const VOR_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyuSzAwICm1OFRcnC7TCJJewOzr8AxqXt0wVJkh2K1e0M87AX-eQ1C0dg4H_o_GJyKF/exec';
     const VOR_COLS = [
-      { key:'date', label:'Date', type:'date' },
-      { key:'requestor', label:'Requestor', type:'text' },
-      { key:'site', label:'Site', type:'select', options:['Safha','Wadi Lathem'] },
-      { key:'workType', label:'Work Type', type:'select', options:['VoR','Day Work'] },
-      { key:'wi', label:'WI No.', type:'text' },
-      { key:'discipline', label:'Discipline', type:'select', options:['Civil','Mechanical','Piping','Electrical','Instrumentation','Telecom','Structural','Process','HSE','QA/QC'] },
-      { key:'scope', label:'Work Scope', type:'textarea', wide:true },
-      { key:'qsDate', label:'Submission Date', type:'date' },
-      { key:'approval', label:'Client Approval', type:'select', options:['Pending','Approved','Rejected'] },
-      { key:'approvalDate', label:'Approval Date', type:'date' },
-      { key:'remarks', label:'Remarks', type:'textarea', wide:true },
+      { key:'date', label:'Date', type:'date', responsibility:'eng' },
+      { key:'requestor', label:'Requestor', type:'text', responsibility:'eng' },
+      { key:'site', label:'Site', type:'select', options:['Safha','Wadi Lathem'], responsibility:'eng' },
+      { key:'workType', label:'Work Type', type:'select', options:['VoR','Day Work'], responsibility:'eng' },
+      { key:'wi', label:'WI No.', type:'text', responsibility:'eng' },
+      { key:'discipline', label:'Discipline', type:'select', options:['Civil','Mechanical','Piping','Electrical','Instrumentation','Telecom','Structural','Process','HSE','QA/QC'], responsibility:'eng' },
+      { key:'scope', label:'Work Scope', type:'textarea', wide:true, responsibility:'eng' },
+      { key:'qsDate', label:'Submission Date', type:'date', responsibility:'qs' },
+      { key:'approval', label:'Client Approval', type:'select', options:['Pending','Approved','Rejected'], responsibility:'qs' },
+      { key:'approvalDate', label:'Approval Date', type:'date', responsibility:'qs' },
+      { key:'remarks', label:'Remarks', type:'textarea', wide:true, responsibility:'qs' },
     ];
 
     // ---------- STATE ----------
@@ -443,7 +576,7 @@
       setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(()=>t.remove(),400); }, 3200);
     }
 
-    // ---------- STATS BAR ----------
+    // ---------- STATS BAR - FIXED LOGIC ----------
     function buildStatsBar(groups){
       const pill = (p) => {
         const clickable = p.filter != null;
@@ -463,8 +596,14 @@
     function vorUpdateKpiBar(){
       const rows = vorAllRows;
       const total = rows.length;
-      const pending_qs = rows.filter(r => !r.qsDate).length;
-      const pending_ap = rows.filter(r => r.qsDate && r.approval === 'Pending').length;
+      
+      // FIXED: Properly count pending submission (no qsDate)
+      const pending_qs = rows.filter(r => !r.qsDate || r.qsDate === '').length;
+      
+      // FIXED: Properly count awaiting approval (has qsDate AND approval is Pending)
+      const pending_ap = rows.filter(r => r.qsDate && r.qsDate !== '' && r.approval === 'Pending').length;
+      
+      // FIXED: Count approved and rejected
       const approved = rows.filter(r => r.approval === 'Approved').length;
       const rejected = rows.filter(r => r.approval === 'Rejected').length;
 
@@ -488,7 +627,7 @@
       vorFilterRender();
     };
 
-    // ---------- FILTER & RENDER ----------
+    // ---------- FILTER & RENDER - FIXED LOGIC ----------
     function vorFilterRender(){
       const q = (document.getElementById('vf-search').value||'').toLowerCase().trim();
       const fSite = document.getElementById('vf-site').value;
@@ -503,19 +642,38 @@
           const hay = `${r.wi||''} ${r.requestor||''} ${r.scope||''} ${r.discipline||''} ${r.site||''} ${r.workType||''}`.toLowerCase();
           if(!hay.includes(q)) return false;
         }
-        if(vorKpiFilter === 'all'){}
-        else if(vorKpiFilter === 'pending_qs'){ if(r.qsDate) return false; }
-        else if(vorKpiFilter === 'pending_ap'){ if(!r.qsDate || r.approval !== 'Pending') return false; }
-        else if(vorKpiFilter === 'approved'){ if(r.approval !== 'Approved') return false; }
-        else if(vorKpiFilter === 'rejected'){ if(r.approval !== 'Rejected') return false; }
+        
+        // FIXED: KPI filter logic
+        if(vorKpiFilter === 'all'){
+          // Show all records
+          return true;
+        } else if(vorKpiFilter === 'pending_qs'){
+          // Show records with no submission date
+          return !r.qsDate || r.qsDate === '';
+        } else if(vorKpiFilter === 'pending_ap'){
+          // Show records that have submission date AND approval is Pending
+          return r.qsDate && r.qsDate !== '' && r.approval === 'Pending';
+        } else if(vorKpiFilter === 'approved'){
+          // Show approved records
+          return r.approval === 'Approved';
+        } else if(vorKpiFilter === 'rejected'){
+          // Show rejected records
+          return r.approval === 'Rejected';
+        }
+        
         return true;
       });
       vorRenderTable();
     }
 
     function vorBuildThead(){
-      document.getElementById('vor-thead').innerHTML = 
-        '<tr><th>#</th>' + VOR_COLS.map(c => `<th>${c.label}</th>`).join('') + '<th style="text-align:center">Actions</th></tr>';
+      let html = '<tr><th>#</th>';
+      VOR_COLS.forEach(c => {
+        const colClass = c.responsibility === 'eng' ? 'eng-column' : 'qs-column';
+        html += `<th class="${colClass}">${c.label}</th>`;
+      });
+      html += '<th style="text-align:center">Actions</th></tr>';
+      document.getElementById('vor-thead').innerHTML = html;
     }
 
     function vorSelectBadge(key, val){
@@ -565,7 +723,7 @@
       return `<tr id="vor-row-${rid}" data-rowid="${rid}" class="${rowClass}">
         <td class="mono" style="font-weight:600">${idx}</td>${cells}
         <td style="text-align:center">
-          <div class="cell-actions" style="justify-content:center">
+          <div class="cell-actions">
             <button class="icon-btn edit-btn" onclick="openEditModal('${rid}')" title="Edit Record"><i class="fas fa-pen"></i></button>
           </div>
         </td>
@@ -628,17 +786,23 @@
 
     async function saveRecord(){
       const form = document.getElementById('recordForm');
-      if(!form.checkValidity()){
-        form.reportValidity();
+      
+      // Check required fields
+      const date = document.getElementById('modal-date').value;
+      const site = document.getElementById('modal-site').value;
+      const workType = document.getElementById('modal-workType').value;
+      
+      if(!date || !site || !workType){
+        campToast('Please fill in all required fields (Date, Site, Work Type)', 'error');
         return;
       }
 
       const payload = {
         action: editingRowId ? 'update' : 'add',
-        date: document.getElementById('modal-date').value,
+        date: date,
         requestor: document.getElementById('modal-requestor').value,
-        site: document.getElementById('modal-site').value,
-        workType: document.getElementById('modal-workType').value,
+        site: site,
+        workType: workType,
         wi: document.getElementById('modal-wi').value,
         discipline: document.getElementById('modal-discipline').value,
         scope: document.getElementById('modal-scope').value,
@@ -690,7 +854,16 @@
           date: parseVorDate(r.date||r.Date),
           qsDate: parseVorDate(r.qsDate || r['Submission Date'] || r['QS Submission Date']),
           approvalDate: parseVorDate(r.approvalDate || r['Client Approval Date']),
+          approval: r.approval || r['Client Approval'] || 'Pending'
         }));
+        
+        // Debug log to verify data
+        console.log('Loaded rows:', vorAllRows.length);
+        console.log('Pending submission:', vorAllRows.filter(r => !r.qsDate || r.qsDate === '').length);
+        console.log('Awaiting approval:', vorAllRows.filter(r => r.qsDate && r.qsDate !== '' && r.approval === 'Pending').length);
+        console.log('Approved:', vorAllRows.filter(r => r.approval === 'Approved').length);
+        console.log('Rejected:', vorAllRows.filter(r => r.approval === 'Rejected').length);
+        
         vorKpiFilter = null;
         vorUpdateKpiBar();
         vorFilterRender();
