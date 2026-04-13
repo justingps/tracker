@@ -1,1 +1,658 @@
-Hello
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPS · Day-Works & VoR Tracker</title>
+  <link rel="icon" href="https://justingps.github.io/dpr/logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;--font-display:'DM Serif Display',serif;
+      --accent:#e07b39;--accent-h:#c96929;--accent2:#3a7bd5;--accent3:#2eaa7e;--danger:#d94f4f;--warning:#d4922b;
+      --radius:10px;--radius-sm:6px;--transition:0.2s ease;--topbar-h:60px;
+    }
+    [data-theme="dark"]{
+      --bg:#0d1117;--bg2:#161b26;--surface:#1c2333;--surface2:#222c3d;
+      --border:rgba(255,255,255,0.07);--border-br:rgba(255,255,255,0.13);
+      --text:#e3e8f0;--text-sub:#8b96ab;--text-dim:#404d63;
+      --shadow:0 2px 16px rgba(0,0,0,0.4);--shadow-sm:0 1px 4px rgba(0,0,0,0.3);
+      --topbar-bg:rgba(13,17,23,0.97);--login-bg:#0d1117;--card-hover:rgba(255,255,255,0.02);
+      --input-bg:#1c2333;--scroll-thumb:#303a4d;--nav-bg:rgba(13,17,23,0.97);
+    }
+    [data-theme="light"]{
+      --bg:#f4f6f9;--bg2:#eceef2;--surface:#ffffff;--surface2:#f0f2f6;
+      --border:rgba(0,0,0,0.08);--border-br:rgba(0,0,0,0.14);
+      --text:#1a2236;--text-sub:#5a6880;--text-dim:#a0acbe;
+      --shadow:0 2px 16px rgba(0,0,0,0.08);--shadow-sm:0 1px 4px rgba(0,0,0,0.06);
+      --topbar-bg:rgba(244,246,249,0.97);--login-bg:#f4f6f9;--card-hover:rgba(0,0,0,0.02);
+      --input-bg:#f0f2f6;--scroll-thumb:#c8cfd9;--nav-bg:rgba(244,246,249,0.97);
+    }
+    body{
+      font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;
+      transition:background var(--transition),color var(--transition);
+    }
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:10px}
+    
+    /* LOGIN */
+    #login-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--login-bg);}
+    .login-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 20%,transparent 100%)}
+    .login-card{position:relative;z-index:1;width:420px;background:var(--surface);border:1px solid var(--border-br);border-radius:16px;padding:44px 40px;box-shadow:var(--shadow);}
+    .login-brand{display:flex;align-items:center;gap:14px;margin-bottom:32px}
+    .login-brand img{width:44px;height:44px;border-radius:10px;object-fit:contain;background:var(--surface2);padding:6px;border:1px solid var(--border-br)}
+    .login-brand-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;}
+    .login-brand-sub{font-size:0.68rem;color:var(--text-sub);letter-spacing:0.1em;text-transform:uppercase;font-family:var(--font-mono)}
+    .login-heading{font-family:var(--font-display);font-size:1.7rem;font-weight:700;margin-bottom:6px;}
+    .login-sub{font-size:0.85rem;color:var(--text-sub);margin-bottom:30px}
+    .field-wrap{margin-bottom:18px}
+    .field-label{display:block;font-size:0.7rem;font-weight:600;color:var(--text-sub);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:7px;font-family:var(--font-mono)}
+    .field-inner{position:relative}
+    .field-inner i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-dim)}
+    .field-inner input{width:100%;padding:11px 13px 11px 38px;background:var(--input-bg);border:1px solid var(--border-br);border-radius:var(--radius-sm);color:var(--text);outline:none;}
+    .field-inner input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,123,57,0.15)}
+    .btn-login{width:100%;padding:12px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;text-transform:uppercase;cursor:pointer;}
+    .btn-login:hover{background:var(--accent-h)}
+    .login-error{display:none;color:var(--danger);margin-top:14px;padding:10px;background:rgba(217,79,79,0.08);border-radius:var(--radius-sm)}
+    .login-theme-toggle{position:absolute;top:20px;right:20px}
+    
+    /* DASHBOARD */
+    #dashboard{display:none;flex-direction:column;min-height:100vh}
+    .topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:var(--topbar-h);background:var(--topbar-bg);border-bottom:1px solid var(--border);backdrop-filter:blur(16px)}
+    .topbar-left{display:flex;align-items:center;gap:14px}
+    .topbar-logo{width:34px;height:34px;border-radius:8px;object-fit:contain;background:var(--surface2);padding:5px;border:1px solid var(--border-br)}
+    .topbar-name{font-family:var(--font-display);font-size:1rem;font-weight:700;}
+    .topbar-meta{font-family:var(--font-mono);font-size:0.62rem;color:var(--text-sub)}
+    .topbar-right{display:flex;align-items:center;gap:12px}
+    .topbar-date{font-family:var(--font-mono);font-size:0.7rem;color:var(--text-sub);padding:5px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:6px}
+    .btn-logout{display:flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:1px solid var(--border-br);border-radius:var(--radius-sm);color:var(--text-sub);cursor:pointer;}
+    .btn-logout:hover{background:rgba(217,79,79,0.08);border-color:rgba(217,79,79,0.3);color:var(--danger)}
+    .content{padding:24px 28px;width:100%}
+    
+    /* THEME TOGGLE */
+    .theme-toggle{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border-br);border-radius:20px;padding:3px;cursor:pointer;}
+    .theme-opt{padding:5px 11px;border-radius:16px;font-size:0.72rem;font-weight:600;font-family:var(--font-mono);color:var(--text-sub);display:flex;align-items:center;gap:5px;}
+    .theme-opt.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+    
+    /* PAGE HEADER */
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;}
+    .page-title{font-family:var(--font-display);font-size:1.5rem;font-weight:700;}
+    .page-title span{color:var(--accent)}
+    
+    /* FILTERS */
+    .filters{display:flex;flex-wrap:wrap;gap:10px;padding:14px 16px;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+    .filter-group{display:flex;align-items:center;gap:8px;flex:1;min-width:175px}
+    .filter-label{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-sub);white-space:nowrap;text-transform:uppercase;}
+    .f-input{flex:1;padding:7px 11px;background:var(--input-bg);border:1px solid var(--border-br);border-radius:var(--radius-sm);color:var(--text);outline:none;}
+    select.f-input{cursor:pointer}
+    
+    /* STATS BAR */
+    .stats-bar{display:flex;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto;}
+    .stats-bar-group{display:flex;border-left:2px solid var(--border-br);}
+    .stats-bar-group:first-child{border-left:none}
+    .stats-bar-group-label{display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);padding:0 7px;background:var(--surface2);}
+    .stat-pill{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 18px;border-right:1px solid var(--border);min-width:96px;cursor:default;}
+    .stat-pill.clickable{cursor:pointer}
+    .stat-pill.clickable:hover{background:rgba(224,123,57,0.04)}
+    .stat-pill.clickable.active-pill{border-top:2px solid var(--accent);padding-top:8px;background:rgba(224,123,57,0.04)}
+    .stat-pill-icon{font-size:0.68rem;color:var(--text-dim);}
+    .stat-pill-value{font-family:var(--font-display);font-size:1.28rem;font-weight:700;}
+    .stat-pill-label{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-sub);text-transform:uppercase;}
+    .sp-orange{--sc:var(--accent)}.sp-blue{--sc:var(--accent2)}.sp-green{--sc:var(--accent3)}.sp-warn{--sc:var(--warning)}.sp-danger{--sc:var(--danger)}.sp-purple{--sc:#9b5de5}.sp-teal{--sc:#17b8c4}
+    
+    /* TABLE */
+    .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;}
+    .table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+    .table-title{font-family:var(--font-display);font-size:0.92rem;font-weight:700;}
+    .table-badge{font-family:var(--font-mono);font-size:0.68rem;color:var(--accent);background:rgba(224,123,57,0.1);padding:3px 10px;border-radius:20px;}
+    .table-scroll{overflow-x:auto;max-height:600px;}
+    .data-table{width:100%;border-collapse:collapse;}
+    .data-table th{position:sticky;top:0;z-index:10;padding:10px 16px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-sub);text-transform:uppercase;background:var(--surface2);border-bottom:1px solid var(--border-br);text-align:left;}
+    .data-table td{padding:6px 10px;font-size:0.78rem;color:var(--text);border-bottom:1px solid var(--border);}
+    .vor-table .col-scope, .vor-table .col-remarks{white-space:normal;word-break:break-word;min-width:180px;max-width:280px;line-height:1.45;}
+    
+    /* ROW COLORS */
+    [data-theme="light"] .vor-row-delay-approval{background:rgba(217,79,79,0.05)!important}
+    [data-theme="light"] .vor-row-delay-ho{background:rgba(212,146,43,0.06)!important}
+    [data-theme="light"] .vor-row-delay-claim{background:rgba(155,93,229,0.05)!important}
+    [data-theme="light"] .vor-row-complete{background:rgba(46,170,126,0.05)!important}
+    [data-theme="dark"] .vor-row-delay-approval{background:rgba(217,79,79,0.07)!important}
+    [data-theme="dark"] .vor-row-delay-ho{background:rgba(212,146,43,0.07)!important}
+    [data-theme="dark"] .vor-row-delay-claim{background:rgba(155,93,229,0.07)!important}
+    [data-theme="dark"] .vor-row-complete{background:rgba(46,170,126,0.07)!important}
+    .vor-row-delay-approval td:first-child{border-left:3px solid var(--danger)}
+    .vor-row-delay-ho td:first-child{border-left:3px solid var(--warning)}
+    .vor-row-delay-claim td:first-child{border-left:3px solid #9b5de5}
+    .vor-row-complete td:first-child{border-left:3px solid var(--accent3)}
+    
+    /* BADGES */
+    .status-pill{display:inline-flex;padding:2px 10px;border-radius:20px;font-family:var(--font-mono);font-size:0.67rem;font-weight:600;}
+    .s-pob{background:rgba(46,170,126,0.12);color:var(--accent3);border:1px solid rgba(46,170,126,0.28)}
+    .s-pol{background:rgba(212,146,43,0.10);color:var(--warning);border:1px solid rgba(212,146,43,0.28)}
+    .s-por{background:rgba(217,79,79,0.10);color:var(--danger);border:1px solid rgba(217,79,79,0.28)}
+    .s-def{background:var(--surface2);color:var(--text-sub);border:1px solid var(--border-br)}
+    .nat-exp{background:rgba(224,123,57,0.10);color:var(--accent);border:1px solid rgba(224,123,57,0.22);padding:2px 9px;border-radius:20px;font-size:0.66rem;}
+    .nat-nat{background:rgba(46,170,126,0.10);color:var(--accent3);border:1px solid rgba(46,170,126,0.22);padding:2px 9px;border-radius:20px;font-size:0.66rem;}
+    .cat-def{background:var(--surface2);color:var(--text-sub);border:1px solid var(--border-br);padding:2px 9px;border-radius:20px;font-size:0.66rem;}
+    .badge-eq{background:rgba(58,123,213,0.12);color:var(--accent2);border:1px solid rgba(58,123,213,0.22);}
+    
+    /* ACTIONS */
+    .btn-accent{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:600;cursor:pointer;}
+    .btn-accent:hover{background:var(--accent-h)}
+    .btn-excel{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;background:rgba(46,170,126,0.1);border:1px solid rgba(46,170,126,0.3);border-radius:var(--radius-sm);color:var(--accent3);cursor:pointer;}
+    .btn-refresh{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;background:rgba(58,123,213,0.1);border:1px solid rgba(58,123,213,0.3);border-radius:var(--radius-sm);color:var(--accent2);cursor:pointer;}
+    
+    .cell-actions{display:flex;gap:5px;justify-content:flex-end}
+    .icon-btn{width:30px;height:30px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;cursor:pointer;color:var(--text-sub);}
+    .icon-btn:hover{color:var(--text);background:var(--surface2);}
+    .icon-btn.save-btn:hover{color:var(--accent3);border-color:var(--accent3);}
+    .icon-btn.del-btn:hover{color:var(--danger);border-color:var(--danger);}
+    .vor-table tr.editing .cell-view{display:none}
+    .vor-table tr.editing .cell-edit{display:inline-block;width:100%}
+    .vor-table .cell-edit{display:none}
+    .inline-input{background:var(--input-bg);border:1px solid var(--accent);color:var(--text);padding:6px 10px;border-radius:var(--radius-sm);width:100%;outline:none;}
+    
+    .no-data{text-align:center;padding:44px;color:var(--text-dim);}
+    .spinner{width:30px;height:30px;border:2px solid var(--border-br);border-top-color:var(--accent);border-radius:50%;animation:spin 0.65s linear infinite;margin:0 auto;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #camp-toast{position:fixed;bottom:80px;right:24px;z-index:900;display:flex;flex-direction:column;gap:8px}
+    .c-toast{background:var(--surface);border:1px solid var(--border-br);padding:12px 18px;border-radius:10px;box-shadow:var(--shadow);}
+    .c-toast.success{border-color:var(--accent3)}.c-toast.error{border-color:var(--danger)}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-grid"></div>
+  <div class="login-theme-toggle">
+    <div class="theme-toggle" id="login-theme-btn">
+      <div class="theme-opt theme-opt-dark" data-t="dark"><i class="fas fa-moon"></i> Dark</div>
+      <div class="theme-opt theme-opt-light active" data-t="light"><i class="fas fa-sun"></i> Light</div>
+    </div>
+  </div>
+  <div class="login-card">
+    <div class="login-brand">
+      <img src="https://justingps.github.io/dpr/logo.png" alt="GPS">
+      <div><div class="login-brand-name">GPS</div><div class="login-brand-sub">Field Operations</div></div>
+    </div>
+    <h2 class="login-heading">Day-Works & VoR</h2>
+    <p class="login-sub">Sign in to access the tracker</p>
+    <div class="field-wrap"><label class="field-label">Username</label><div class="field-inner"><input type="text" id="u" placeholder="Enter username"><i class="fas fa-user"></i></div></div>
+    <div class="field-wrap"><label class="field-label">Password</label><div class="field-inner"><input type="password" id="p" placeholder="Enter password"><i class="fas fa-lock"></i></div></div>
+    <button class="btn-login" id="btn-login">Sign In</button>
+    <div class="login-error" id="login-err"><i class="fas fa-circle-exclamation"></i> Invalid credentials</div>
+    <div class="login-footer" style="margin-top:30px;font-size:0.68rem;color:var(--text-dim)">Gulf Petrochemical Services LLC. © 2025</div>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="dashboard">
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="https://justingps.github.io/dpr/logo.png" alt="GPS" class="topbar-logo">
+      <div><div class="topbar-name">Gulf Petrochemical Services</div><div class="topbar-meta">DAY-WORKS & VOR TRACKER</div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-date"><span id="today-label"></span></div>
+      <div class="theme-toggle" id="dash-theme-btn">
+        <div class="theme-opt theme-opt-dark" data-t="dark"><i class="fas fa-moon"></i> Dark</div>
+        <div class="theme-opt theme-opt-light active" data-t="light"><i class="fas fa-sun"></i> Light</div>
+      </div>
+      <button class="btn-logout" id="btn-logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="page-header">
+      <h1 class="page-title">Day-Works & <span>VoR Tracker</span></h1>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-excel" onclick="vorExportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+        <button class="btn-accent" onclick="vorAddRow()"><i class="fas fa-plus"></i> Add Record</button>
+        <button class="btn-refresh" onclick="vorLoadData()"><i class="fas fa-rotate-right"></i> Refresh</button>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="filter-group"><span class="filter-label"><i class="fas fa-search"></i> Search</span><input type="text" id="vf-search" class="f-input" placeholder="WI, requestor, scope…" oninput="vorFilterRender()"></div>
+      <div class="filter-group"><span class="filter-label"><i class="fas fa-map-pin"></i> Site</span><select id="vf-site" class="f-input" onchange="vorFilterRender()"><option value="all">All Sites</option><option>Safha</option><option>Wadi Lathem</option></select></div>
+      <div class="filter-group"><span class="filter-label"><i class="fas fa-folder"></i> Work Type</span><select id="vf-type" class="f-input" onchange="vorFilterRender()"><option value="all">All Types</option><option>VoR</option><option>Day Work</option></select></div>
+      <div class="filter-group"><span class="filter-label"><i class="fas fa-circle-check"></i> Approval</span><select id="vf-approval" class="f-input" onchange="vorFilterRender()"><option value="all">All Statuses</option><option>Pending</option><option>Approved</option><option>Rejected</option></select></div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div id="vor-stats-bar"></div>
+
+    <!-- LEGEND -->
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <span class="filter-label">Row Colour Key</span>
+      <span class="delay-flag red" style="background:rgba(217,79,79,0.12);padding:2px 7px;border-radius:20px"><i class="fas fa-square" style="font-size:7px"></i> Approval Overdue (>14d)</span>
+      <span class="delay-flag amber" style="background:rgba(212,146,43,0.12);padding:2px 7px;border-radius:20px"><i class="fas fa-square" style="font-size:7px"></i> Rejected</span>
+      <span class="delay-flag purple" style="background:rgba(155,93,229,0.12);padding:2px 7px;border-radius:20px"><i class="fas fa-square" style="font-size:7px"></i> Submitted / Pending</span>
+      <span class="delay-flag" style="background:rgba(46,170,126,0.12);padding:2px 7px;border-radius:20px"><i class="fas fa-square" style="font-size:7px"></i> Approved</span>
+    </div>
+
+    <!-- MAIN TABLE -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <div class="table-title">VoR & Day-Works Register</div>
+        <div class="table-badge" id="vor-badge">0 records</div>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table vor-table" id="vor-table">
+          <thead id="vor-thead"></thead>
+          <tbody id="vor-tbody"><tr><td colspan="20" class="no-data"><div class="spinner"></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="camp-toast"></div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- THEME ----------
+    let currentTheme = localStorage.getItem('gps-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    function applyTheme(t){
+      currentTheme = t;
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('gps-theme', t);
+      document.querySelectorAll('.theme-opt').forEach(el => el.classList.toggle('active', el.dataset.t === t));
+    }
+
+    // ---------- AUTH ----------
+    const CREDS = { u:'gpsoman', p:'gpsoman' };
+    function doLogin(){
+      const u = document.getElementById('u').value.trim();
+      const p = document.getElementById('p').value.trim();
+      if(u === CREDS.u && p === CREDS.p){
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
+        document.getElementById('login-err').style.display = 'none';
+        initApp();
+      } else {
+        document.getElementById('login-err').style.display = 'flex';
+        document.getElementById('p').value = '';
+      }
+    }
+    function doLogout(){
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('u').value = ''; 
+      document.getElementById('p').value = '';
+    }
+
+    // ---------- DATE HELPERS ----------
+    const DOJ_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function parseVorDate(raw){
+      if(!raw) return '';
+      let s = String(raw).trim();
+      let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if(m) return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+      m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+      if(m){ const mi = DOJ_MONTHS.findIndex(x=>x.toLowerCase()===m[2].toLowerCase()); if(mi>=0) return `${m[3]}-${String(mi+1).padStart(2,'0')}-${m[1].padStart(2,'0')}`; }
+      m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+      const p = new Date(s); if(!isNaN(p)) return `${p.getFullYear()}-${String(p.getMonth()+1).padStart(2,'0')}-${String(p.getDate()).padStart(2,'0')}`;
+      return '';
+    }
+    function fmtDOJ(ymd){
+      if(!ymd) return '—';
+      const m = ymd.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if(!m) return ymd;
+      return `${m[3]}-${DOJ_MONTHS[parseInt(m[2],10)-1]}-${m[1]}`;
+    }
+    function daysBetween(a,b){
+      if(!a||!b) return null;
+      return Math.round((new Date(b) - new Date(a))/(1000*60*60*24));
+    }
+    function today(){ return new Date().toISOString().slice(0,10); }
+    function fmtDisplay(d){ return d.getDate()+'-'+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+'-'+d.getFullYear(); }
+
+    // ---------- VOR CONFIG ----------
+    const VOR_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyuSzAwICm1OFRcnC7TCJJewOzr8AxqXt0wVJkh2K1e0M87AX-eQ1C0dg4H_o_GJyKF/exec';
+    const VOR_COLS = [
+      { key:'date', label:'Date', type:'date' },
+      { key:'requestor', label:'Requestor', type:'text' },
+      { key:'site', label:'Site', type:'select', options:['Safha','Wadi Lathem'] },
+      { key:'workType', label:'Work Type', type:'select', options:['VoR','Day Work'] },
+      { key:'wi', label:'WI No.', type:'text' },
+      { key:'discipline', label:'Discipline', type:'select', options:['Civil','Mechanical','Piping','Electrical','Instrumentation','Telecom','Structural','Process','HSE','QA/QC'] },
+      { key:'scope', label:'Work Scope', type:'textarea', wide:true },
+      { key:'qsDate', label:'Submission Date', type:'date' },
+      { key:'approval', label:'Client Approval', type:'select', options:['Pending','Approved','Rejected'] },
+      { key:'approvalDate', label:'Approval Date', type:'date' },
+      { key:'remarks', label:'Remarks', type:'textarea', wide:true },
+    ];
+
+    // ---------- STATE ----------
+    let vorAllRows = [];
+    let vorFilteredRows = [];
+    let vorNewCounter = 0;
+    let vorKpiFilter = null;
+    let vorLoading = false;
+
+    // ---------- UTILS ----------
+    function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function campToast(msg, type='info'){
+      const icons = {success:'✓', error:'⚠', info:'ℹ'};
+      const c = document.getElementById('camp-toast');
+      const t = document.createElement('div');
+      t.className = `c-toast ${type}`;
+      t.innerHTML = `<span>${icons[type]||'•'}</span> ${escHtml(msg)}`;
+      c.appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(()=>t.remove(),400); }, 3200);
+    }
+
+    // ---------- STATS BAR (shared) ----------
+    function buildStatsBar(groups){
+      const pill = (p) => {
+        const clickable = p.filter != null;
+        const isActive = clickable && vorKpiFilter === p.filter;
+        const extraClass = clickable ? ` clickable${isActive ? ' active-pill' : ''}` : '';
+        const onClick = clickable ? ` onclick="vorKpiClick('${p.filter}')"` : '';
+        return `<div class="stat-pill ${p.color||''}${extraClass}"${onClick}>
+          <div class="stat-pill-icon"><i class="fas ${p.icon}"></i></div>
+          <div class="stat-pill-value">${p.value}</div>
+          <div class="stat-pill-label">${p.label}</div>
+        </div>`;
+      };
+      const group = (g) => `<div class="stats-bar-group">${g.label ? `<div class="stats-bar-group-label">${g.label}</div>` : ''}${g.pills.map(pill).join('')}</div>`;
+      return `<div class="stats-bar">${groups.map(group).join('')}</div>`;
+    }
+
+    function vorDeriveStatus(r){
+      const approval = (r.approval||'').trim();
+      if(approval === 'Approved') return 'closed';
+      if(approval === 'Rejected') return 'rejected';
+      if(r.qsDate){
+        const days = daysBetween(r.qsDate, today());
+        if(days !== null && days > 14) return 'delay-approval';
+        return 'submitted';
+      }
+      return 'initiated';
+    }
+
+    function vorUpdateKpiBar(){
+      const rows = vorAllRows;
+      const total = rows.length;
+      const pending_qs = rows.filter(r => !r.qsDate).length;
+      const pending_ap = rows.filter(r => r.qsDate && r.approval === 'Pending').length;
+      const approved = rows.filter(r => r.approval === 'Approved').length;
+      const rejected = rows.filter(r => r.approval === 'Rejected').length;
+      const delay_appr = rows.filter(r => vorDeriveStatus(r) === 'delay-approval').length;
+      const submitted = rows.filter(r => vorDeriveStatus(r) === 'submitted').length;
+
+      document.getElementById('vor-stats-bar').innerHTML = buildStatsBar([
+        { label:'Overview', pills:[
+          { label:'Total Requests', value:total, icon:'fa-file-contract', color:'sp-orange', filter:'all' },
+          { label:'Approved', value:approved, icon:'fa-circle-check', color:'sp-green', filter:'approved' },
+          { label:'Rejected', value:rejected, icon:'fa-circle-xmark', color:'sp-danger', filter:'rejected' },
+        ]},
+        { label:'Pipeline', pills:[
+          { label:'Pending Submission', value:pending_qs, icon:'fa-paper-plane', color:'sp-blue', filter:'pending_qs' },
+          { label:'Submitted', value:submitted, icon:'fa-inbox', color:'sp-teal', filter:'submitted' },
+          { label:'Awaiting Approval', value:pending_ap, icon:'fa-clock', color:'sp-warn', filter:'pending_ap' },
+        ]},
+        { label:'Alerts', pills:[
+          { label:'Approval Overdue', value:delay_appr, icon:'fa-triangle-exclamation', color:'sp-purple', filter:'delay_appr' },
+        ]}
+      ]);
+    }
+
+    window.vorKpiClick = function(filter){
+      if(vorKpiFilter === filter) vorKpiFilter = null;
+      else vorKpiFilter = filter;
+      vorUpdateKpiBar();
+      vorFilterRender();
+    };
+
+    // ---------- FILTER & RENDER ----------
+    function vorFilterRender(){
+      const q = (document.getElementById('vf-search').value||'').toLowerCase().trim();
+      const fSite = document.getElementById('vf-site').value;
+      const fType = document.getElementById('vf-type').value;
+      const fApp = document.getElementById('vf-approval').value;
+
+      vorFilteredRows = vorAllRows.filter(r => {
+        if(fSite !== 'all' && r.site !== fSite) return false;
+        if(fType !== 'all' && r.workType !== fType) return false;
+        if(fApp !== 'all' && r.approval !== fApp) return false;
+        if(q){
+          const hay = `${r.wi||''} ${r.requestor||''} ${r.scope||''} ${r.discipline||''} ${r.site||''} ${r.workType||''}`.toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        if(vorKpiFilter === 'all'){}
+        else if(vorKpiFilter === 'pending_qs'){ if(r.qsDate) return false; }
+        else if(vorKpiFilter === 'pending_ap'){ if(!r.qsDate || r.approval !== 'Pending') return false; }
+        else if(vorKpiFilter === 'approved'){ if(r.approval !== 'Approved') return false; }
+        else if(vorKpiFilter === 'rejected'){ if(r.approval !== 'Rejected') return false; }
+        else if(vorKpiFilter === 'submitted'){ if(vorDeriveStatus(r) !== 'submitted') return false; }
+        else if(vorKpiFilter === 'delay_appr'){ if(vorDeriveStatus(r) !== 'delay-approval') return false; }
+        return true;
+      });
+      vorRenderTable();
+    }
+
+    function vorBuildThead(){
+      document.getElementById('vor-thead').innerHTML = 
+        '<tr><th>#</th>' + VOR_COLS.map(c => `<th>${c.label}</th>`).join('') + '<th style="text-align:right">Actions</th></tr>';
+    }
+
+    function vorSelectBadge(key, val){
+      if(!val) return '—';
+      if(key === 'approval'){
+        const m = {Pending:'s-pol', Approved:'s-pob', Rejected:'s-por'};
+        return `<span class="status-pill ${m[val]||'s-def'}">${escHtml(val)}</span>`;
+      }
+      if(key === 'workType'){
+        return val === 'VoR' ? `<span class="nat-exp">${escHtml(val)}</span>` : `<span class="nat-nat">${escHtml(val)}</span>`;
+      }
+      if(key === 'site') return `<span class="badge-eq cat-def" style="background:rgba(58,123,213,0.1);">${escHtml(val)}</span>`;
+      return `<span class="cat-def">${escHtml(val)}</span>`;
+    }
+
+    function vorRowHTML(r, idx){
+      const rid = r._id;
+      const status = vorDeriveStatus(r);
+      const rowClass = 
+        status === 'closed' ? 'vor-row-complete' :
+        status === 'delay-approval' ? 'vor-row-delay-approval' :
+        status === 'rejected' ? 'vor-row-delay-ho' :
+        status === 'submitted' ? 'vor-row-delay-claim' : '';
+
+      let cells = '';
+      VOR_COLS.forEach(col => {
+        const val = r[col.key] || '';
+        const isWide = col.wide === true;
+        const tdClass = isWide ? (col.key==='scope'?'col-scope':'col-remarks') : '';
+        let viewHtml = '', editHtml = '';
+        if(col.type === 'select'){
+          viewHtml = vorSelectBadge(col.key, val);
+          editHtml = `<select class="inline-input cell-edit" id="ve-${col.key}-${rid}">
+            ${col.options.map(o=>`<option ${val===o?'selected':''}>${escHtml(o)}</option>`).join('')}
+          </select>`;
+        } else if(col.type === 'textarea'){
+          const short = val.length > 55 ? val.slice(0,55)+'…' : val;
+          viewHtml = `<span title="${escHtml(val)}">${escHtml(short)||'—'}</span>`;
+          editHtml = `<textarea class="inline-input cell-edit" id="ve-${col.key}-${rid}" style="min-height:44px">${escHtml(val)}</textarea>`;
+        } else if(col.type === 'date'){
+          viewHtml = `<span class="mono">${val ? fmtDOJ(val) : '—'}</span>`;
+          editHtml = `<input type="date" class="inline-input cell-edit" id="ve-${col.key}-${rid}" value="${escHtml(val)}">`;
+        } else {
+          const short = val.length > 25 ? val.slice(0,25)+'…' : val;
+          viewHtml = `<span title="${escHtml(val)}">${escHtml(short)||'—'}</span>`;
+          editHtml = `<input type="text" class="inline-input cell-edit" id="ve-${col.key}-${rid}" value="${escHtml(val)}">`;
+        }
+        cells += `<td class="${tdClass}"><span class="cell-view">${viewHtml}</span>${editHtml}</td>`;
+      });
+
+      return `<tr id="vor-row-${rid}" data-rowid="${rid}" class="${rowClass}">
+        <td class="mono">${idx}</td>${cells}
+        <td style="text-align:right">
+          <div class="cell-actions">
+            <div class="edit-actions">
+              <button class="icon-btn" onclick="vorEditRow('${rid}')"><i class="fas fa-pen"></i></button>
+              <button class="icon-btn del-btn" onclick="vorDeleteRow('${rid}')"><i class="fas fa-trash"></i></button>
+            </div>
+            <div class="save-actions" style="display:none">
+              <button class="icon-btn save-btn" onclick="vorSaveRow('${rid}')"><i class="fas fa-check"></i></button>
+              <button class="icon-btn cancel-btn" onclick="vorCancelEdit('${rid}')"><i class="fas fa-xmark"></i></button>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    }
+
+    function vorRenderTable(){
+      vorBuildThead();
+      document.getElementById('vor-badge').textContent = `${vorFilteredRows.length} record${vorFilteredRows.length!==1?'s':''}`;
+      if(!vorFilteredRows.length){
+        document.getElementById('vor-tbody').innerHTML = `<tr><td colspan="${VOR_COLS.length+2}" class="no-data">No records</td></tr>`;
+        return;
+      }
+      document.getElementById('vor-tbody').innerHTML = vorFilteredRows.map((r,i) => vorRowHTML(r, i+1)).join('');
+    }
+
+    // ---------- CRUD ----------
+    async function vorLoadData(){
+      document.getElementById('vor-tbody').innerHTML = `<tr><td colspan="20" class="no-data"><div class="spinner"></div>Loading…</td></tr>`;
+      try {
+        const res = await fetch(VOR_WEBAPP_URL + '?t=' + Date.now());
+        const json = await res.json();
+        if(json.status !== 'ok') throw new Error(json.message);
+        vorAllRows = json.rows.map(r => ({
+          ...r,
+          _id: String(r._row),
+          date: parseVorDate(r.date||r.Date),
+          qsDate: parseVorDate(r.qsDate || r['Submission Date'] || r['QS Submission Date']),
+          approvalDate: parseVorDate(r.approvalDate || r['Client Approval Date']),
+        }));
+        vorKpiFilter = null;
+        vorUpdateKpiBar();
+        vorFilterRender();
+        campToast('VoR data loaded — ' + vorAllRows.length + ' records', 'success');
+      } catch(e){
+        document.getElementById('vor-tbody').innerHTML = `<tr><td colspan="20" class="no-data">⚠ Failed to load data.</td></tr>`;
+        campToast('Load failed: '+e.message, 'error');
+      }
+    }
+
+    window.vorEditRow = function(rid){ document.getElementById('vor-row-'+rid)?.classList.add('editing'); };
+    window.vorCancelEdit = function(rid){
+      const tr = document.getElementById('vor-row-'+rid);
+      if(tr) tr.classList.remove('editing');
+    };
+
+    window.vorSaveRow = async function(rid){
+      if(vorLoading){ campToast('Save in progress…','info'); return; }
+      const isNew = !vorAllRows.find(x => x._id === rid);
+      const payload = { action: isNew ? 'add' : 'update' };
+      if(!isNew) payload._row = rid;
+      VOR_COLS.forEach(col => {
+        const el = document.getElementById(`ve-${col.key}-${rid}`);
+        payload[col.key] = el ? el.value.trim() : '';
+      });
+      if(!payload.site){ campToast('Select Site','error'); return; }
+      if(!payload.workType){ campToast('Select Work Type','error'); return; }
+      if(payload.approval === 'Approved' && !payload.approvalDate){ campToast('Approval Date required','error'); return; }
+      const tr = document.getElementById('vor-row-'+rid); if(tr) tr.classList.add('saving');
+      vorLoading = true;
+      try {
+        const res = await fetch(VOR_WEBAPP_URL, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)});
+        const json = await res.json();
+        if(json.status !== 'ok') throw new Error(json.message);
+        campToast(isNew?'Record added':'Record updated','success');
+        await vorLoadData();
+      } catch(e){
+        campToast('Save failed: '+e.message,'error');
+        if(tr) tr.classList.remove('saving','editing');
+      } finally { vorLoading = false; }
+    };
+
+    window.vorDeleteRow = async function(rid){
+      if(String(rid).startsWith('vnew_')){ document.getElementById('vor-row-'+rid)?.remove(); return; }
+      if(!confirm('Delete this record?')) return;
+      if(vorLoading){ campToast('Please wait','info'); return; }
+      const tr = document.getElementById('vor-row-'+rid); if(tr) tr.classList.add('saving');
+      vorLoading = true;
+      try {
+        const res = await fetch(VOR_WEBAPP_URL, {method:'POST', body:JSON.stringify({action:'delete',_row:rid})});
+        const json = await res.json();
+        if(json.status !== 'ok') throw new Error(json.message);
+        campToast('Record deleted','info');
+        await vorLoadData();
+      } catch(e){
+        campToast('Delete failed: '+e.message,'error');
+        if(tr) tr.classList.remove('saving');
+      } finally { vorLoading = false; }
+    };
+
+    window.vorAddRow = function(){
+      vorNewCounter++;
+      const rid = 'vnew_'+vorNewCounter;
+      const tbody = document.getElementById('vor-tbody');
+      let cells = '';
+      VOR_COLS.forEach(col => {
+        const isWide = col.wide === true;
+        const tdClass = isWide ? (col.key==='scope'?'col-scope':'col-remarks') : '';
+        let editHtml = '';
+        if(col.type === 'select') editHtml = `<select class="inline-input cell-edit" id="ve-${col.key}-${rid}"><option value="">—</option>${col.options.map(o=>`<option>${escHtml(o)}</option>`).join('')}</select>`;
+        else if(col.type === 'textarea') editHtml = `<textarea class="inline-input cell-edit" id="ve-${col.key}-${rid}" style="min-height:44px"></textarea>`;
+        else if(col.type === 'date') editHtml = `<input type="date" class="inline-input cell-edit" id="ve-${col.key}-${rid}">`;
+        else editHtml = `<input type="text" class="inline-input cell-edit" id="ve-${col.key}-${rid}">`;
+        cells += `<td class="${tdClass}">${editHtml}</td>`;
+      });
+      tbody.insertAdjacentHTML('afterbegin', `<tr id="vor-row-${rid}" class="new-row editing">
+        <td>★</td>${cells}
+        <td style="text-align:right"><div class="cell-actions"><div class="save-actions" style="display:flex">
+          <button class="icon-btn save-btn" onclick="vorSaveRow('${rid}')"><i class="fas fa-check"></i></button>
+          <button class="icon-btn cancel-btn" onclick="vorCancelEdit('${rid}')"><i class="fas fa-xmark"></i></button>
+        </div></div></td>
+      </tr>`);
+    };
+
+    window.vorExportExcel = function(){
+      if(!vorAllRows.length){ alert('No data'); return; }
+      const hdr = ['#','Date','Requestor','Site','Work Type','WI No.','Discipline','Work Scope','Submission Date','Approval','Approval Date','Remarks'];
+      const rows = vorAllRows.map((r,i) => [i+1, fmtDOJ(r.date), r.requestor, r.site, r.workType, r.wi, r.discipline, r.scope, fmtDOJ(r.qsDate), r.approval, fmtDOJ(r.approvalDate), r.remarks]);
+      const ws = XLSX.utils.aoa_to_sheet([hdr, ...rows]);
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'VoR');
+      XLSX.writeFile(wb, `GPS_VoR_DayWorks_${today()}.xlsx`);
+    };
+
+    // ---------- INIT ----------
+    function initApp(){
+      const todayDate = new Date();
+      document.getElementById('today-label').textContent = fmtDisplay(todayDate);
+      vorLoadData();
+    }
+
+    // ---------- EVENT LISTENERS ----------
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.theme-opt').forEach(el => {
+        el.classList.toggle('active', el.dataset.t === currentTheme);
+        el.addEventListener('click', () => applyTheme(el.dataset.t));
+      });
+      document.getElementById('btn-login').addEventListener('click', doLogin);
+      document.getElementById('p').addEventListener('keypress', e => { if(e.key==='Enter') doLogin(); });
+      document.getElementById('btn-logout').addEventListener('click', doLogout);
+    });
+
+    // expose for inline
+    window.vorFilterRender = vorFilterRender;
+    window.vorLoadData = vorLoadData;
+  })();
+</script>
+</body>
+</html>
